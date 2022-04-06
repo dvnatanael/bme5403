@@ -30,4 +30,4 @@ def main(x_range=(-5, 5), y_range=(-5, 5), data_points=100):
 
 
 if __name__ == '__main__':
-    main()
+    main(data_points=250)
