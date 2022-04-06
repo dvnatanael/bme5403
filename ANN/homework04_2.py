@@ -29,7 +29,7 @@ import winsound
 import util
 
 start = time.perf_counter()
-print(f'start: {time.time()}')
+print(f'start: {datetime.now().strftime("%Y%m%d %H.%M.%S")}')
 
 
 class CamelbackDataset(Dataset):
@@ -59,21 +59,21 @@ class ANN(nn.Module):
         super(ANN, self).__init__()
         # TODO: modify model's structure, be aware of dimensions.
         self.layers = nn.Sequential(
-            nn.Linear(input_dim, 32),
+            nn.Linear(input_dim, 512),
             nn.ReLU(),
-            nn.Linear(32, 32),
+            nn.Linear(512, 512),
             nn.Sigmoid(),
-            nn.Linear(32, 32),
+            nn.Linear(512, 512),
             nn.ReLU(),
-            nn.Linear(32, 32),
+            nn.Linear(512, 512),
             nn.Sigmoid(),
-            nn.Linear(32, 32),
+            nn.Linear(512, 512),
             nn.ReLU(),
-            nn.Linear(32, 32),
+            nn.Linear(512, 512),
             nn.Sigmoid(),
-            nn.Linear(32, 32),
+            nn.Linear(512, 512),
             nn.ReLU(),
-            nn.Linear(32, 1)
+            nn.Linear(512, 1)
         )
 
     def forward(self, x):
@@ -99,7 +99,7 @@ def select_feat(train_data, valid_data, test_data, select_all=True):
 def trainer(train_loader, valid_loader, model, config, device):
     """Training loop"""
 
-    # Define your loss function, do not modify this.
+    # Define your loss function.
     criterion = nn.MSELoss(reduction='mean')
 
     # Define your optimization algorithm.
@@ -115,7 +115,11 @@ def trainer(train_loader, valid_loader, model, config, device):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, 'min', **config['lr_plateau'], verbose=True)
 
-    writer = SummaryWriter()  # Writer of tensorboard.
+    if not os.path.isdir('./homework04_2/runs'):
+        os.makedirs('./homework04_2/runs')
+
+    # Writer of tensorboard.
+    writer = SummaryWriter(log_dir=f'./homework04_2/runs/{datetime.now().strftime("%Y%m%d%H%M")}')
 
     if not os.path.isdir('./homework04_2/models'):
         os.makedirs('./homework04_2/models')  # Create directory of saving models.
@@ -176,7 +180,8 @@ def trainer(train_loader, valid_loader, model, config, device):
 
         if early_stop_count >= config['early_stop']:
             print('\nModel is not improving, so we halt the training session.')
-            return
+            break
+    # print(model.state_dict())
 
 
 """# Configurations
@@ -189,9 +194,9 @@ print(f'device: {device}')
 config = {
     'seed': 191415879,  # Your seed number, you can pick your lucky number. :)
     'select_all': False,  # Whether to use all features.
-    'valid_ratio': 0.1,  # validation_size = train_size * valid_ratio
+    'valid_ratio': 2 / 9,  # validation_size = train_size * valid_ratio
     'n_epochs': 3000,  # Number of epochs.
-    'batch_size': 256,
+    'batch_size': 512,
     'SGD': {
         'lr': 1e-4,
         'momentum': 0.9
@@ -204,7 +209,7 @@ config = {
         'amsgrad': False
     },
     'Adadelta': {
-        'rho': 0.999,
+        'rho': 0.995,
         'eps': 1e-12,
         'lr': 4,
         'weight_decay': 1e-2
@@ -221,7 +226,6 @@ config = {
 
 """# Dataloader
 Read data from files and set up training, validation, and testing sets.
-You do not need to modify this part.
 """
 
 # Set seed for reproducibility
