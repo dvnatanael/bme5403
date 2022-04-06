@@ -1,0 +1,86 @@
+import numpy as np
+
+
+class NeuralNetwork:
+    ε = 1e-8
+
+
+    @staticmethod
+    def sigmoid(x, λ=1):
+        return 1 / (1 + np.exp(-λ * x))
+
+
+    def __init__(self):
+        pass
+
+
+    def __repr__(self):
+        z = [z.T for z in self.z]
+        a = [a.T for a in self.a]
+        out = f'{self.depth = }\n{self.structure = }\n{self.w = }\nself.{z = }\nself.{a = }\n{self.δ = }'
+        return out
+
+
+    def initialize(self):
+        self.structure = [2, 2, 1]
+        self.depth = len(self.structure)
+        self.η = 0.1
+        self.w = []
+        self.w.append(np.array([[0.2, -0.4, 0.8], [0.2, -0.2, -0.1]], dtype=np.float64))
+        self.w.append(np.array([0.1, -0.4, 0.3], dtype=np.float64))
+        self.z = []
+        self.a = []
+        self.δ = []
+
+
+    def feed_forward(self, x, *, verbose=False):
+        a = np.vstack((x, np.asarray(-1)))
+        self.z.append(a)
+        self.a.append(a)
+        for i, wl in enumerate(self.w):
+            z = np.matmul(wl, a)
+            a = NeuralNetwork.sigmoid(z)
+
+            if verbose:
+                out = np.ndarray.flatten(wl).tolist()
+                if type(t := np.ndarray.flatten(z).tolist()) == list: out.extend(t)
+                else: out.append(z)
+                if type(t := np.ndarray.flatten(a).tolist()) == list: out.extend(t)
+                else: out.append(a)
+                print(' '.join([f'{i:8.5f}' for i in out]))
+
+            if i != self.depth - 2:
+                a = np.vstack((a, np.asarray(-1)))
+            self.z.append(z)
+            self.a.append(a)
+
+
+    def back_propagate(self, t):
+        self.δ.append(-self.η * (t - self.a[-1]))
+        for a, w, n in zip(reversed(self.a), reversed(self.w + [1]), reversed(self.structure)):
+            a = a.flatten()
+            print(f'{self.δ = }', end='\n\n')
+            δ = self.δ[-1].copy()
+            print(n, 'δ', δ, a, 1 - a, w, end=' ')
+            prev_δ = []
+            for ai in a:
+                pass
+            prev_δ.append(δ * (ai * (1 - ai) * w))
+            print(prev_δ)
+            self.δ.append(prev_δ)
+        print(f'{self.δ = }')
+        # self.δ.reverse()
+
+
+def main():
+    nn = NeuralNetwork()
+    nn.initialize()
+    nn.feed_forward(np.asarray([[-1], [1]]), verbose=False)
+    print(nn, end='\n\n')
+    nn.back_propagate(1)
+    print(nn)
+
+
+if __name__ == '__main__':
+    np.set_printoptions(precision=5, suppress=True)
+    main()

@@ -1,0 +1,71 @@
+import numpy as np
+
+
+class NeuralNetwork:
+    epsilon = 1e-8
+
+
+    @staticmethod
+    def sigmoid(x, l=1):
+        return 1 / (1 + np.exp(-l * x))
+
+
+    def __init__(self):
+        pass
+
+
+    def __repr__(self):
+        out = f'{self.layers = }\n{self.structure = }\n{self.w = }\n{self.a = }\n{self.delta = }'
+        return out
+
+
+    def initialize(self):
+        self.structure = [2, 2, 1]
+        self.layers = len(self.structure)
+        self.eta = 0.1
+        self.w = []
+        self.w.append(np.array([[0.2, -0.4, 0.8], [0.2, -0.2, -0.1]], dtype=np.float64))
+        self.w.append(np.array([0.1, -0.4, 0.3], dtype=np.float64))
+        self.a = []
+        self.delta = []
+
+
+    def feed_forward(self, x, *, verbose=False):
+        a = np.append(x, -1)
+        self.a.append(a)
+        for i, wi in enumerate(self.w):
+            z = np.matmul(wi, a)
+            a = NeuralNetwork.sigmoid(z)
+
+            if verbose:
+                out = np.ndarray.flatten(wi).tolist()
+                if type(t := z.tolist()) == list: out.extend(t)
+                else: out.append(z)
+                if type(t := a.tolist()) == list: out.extend(t)
+                else: out.append(a)
+                print(' '.join([f'{i:6.3f}' for i in out]))
+
+            if i != self.layers - 2:
+                a = np.append(a, -1)
+            self.a.append(a)
+
+
+    def back_propagate(self, t):
+        self.delta.append(-self.eta * (t - self.a[-1]))
+        for i in range(self.layers - 1, 0, -1):
+            print(self.delta[-1] * self.a[i] * (1 - self.a[i]))
+            self.delta.append(self.delta[-1] * self.a[i] * (1 - self.a[i]))
+
+
+def main():
+    nn = NeuralNetwork()
+    nn.initialize()
+    nn.feed_forward(np.asarray([-1, 1]), verbose=True)
+    print(nn, end='\n\n')
+    nn.back_propagate(1)
+    print(nn)
+
+
+if __name__ == '__main__':
+    np.set_printoptions(precision=1, suppress=True)
+    main()
