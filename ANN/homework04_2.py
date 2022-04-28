@@ -61,18 +61,27 @@ class ANN(nn.Module):
         self.layers = nn.Sequential(
             nn.Linear(input_dim, 512),
             nn.ReLU(),
+
             nn.Linear(512, 512),
             nn.Sigmoid(),
             nn.Linear(512, 512),
             nn.ReLU(),
+
             nn.Linear(512, 512),
             nn.Sigmoid(),
             nn.Linear(512, 512),
             nn.ReLU(),
+
             nn.Linear(512, 512),
             nn.Sigmoid(),
             nn.Linear(512, 512),
             nn.ReLU(),
+
+            nn.Linear(512, 512),
+            nn.Sigmoid(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+
             nn.Linear(512, 1)
         )
 
@@ -195,7 +204,7 @@ config = {
     'seed': 191415879,  # Your seed number, you can pick your lucky number. :)
     'select_all': False,  # Whether to use all features.
     'valid_ratio': 2 / 9,  # validation_size = train_size * valid_ratio
-    'n_epochs': 3000,  # Number of epochs.
+    'n_epochs': 5000,  # Number of epochs.
     'batch_size': 512,
     'SGD': {
         'lr': 1e-4,
@@ -216,7 +225,7 @@ config = {
     },
     'lr_plateau': {
         'factor': 0.5,
-        'patience': 80,
+        'patience': 60,
         # 'cooldown': 30,
         'min_lr': 1e-16
     },
