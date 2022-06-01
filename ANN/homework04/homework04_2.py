@@ -55,7 +55,7 @@ class ANN(nn.Module):
     """A neural network model to train the CamelbackDataset on."""
 
     def __init__(self, input_dim):
-        super(ANN, self).__init__()
+        super().__init__()
         # TODO: modify model's structure, be aware of dimensions.
         self.layers = nn.Sequential(
             nn.Linear(input_dim, 512),
