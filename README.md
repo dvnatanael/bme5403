@@ -1,2 +1,2 @@
 # bme5403
-A repository for the course BME5403 Intelligent Control (NTU)
+A repository for the NTU 2022 Spring BME5403 Intelligent Control course.
